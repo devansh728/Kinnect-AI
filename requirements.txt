@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+langgraph
+langchain-google-genai
+chromadb
+python-dotenv
+pydantic
+pydantic-settings
+mcp
