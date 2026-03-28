@@ -14,3 +14,9 @@ sounddevice
 soundfile
 numpy
 pydub
+
+gtts
+pyttsx3
+pygame
+
+asyncio
