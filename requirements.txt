@@ -7,3 +7,10 @@ python-dotenv
 pydantic
 pydantic-settings
 mcp
+langchain-core
+pydantic>=2.0
+openai-whisper
+sounddevice
+soundfile
+numpy
+pydub

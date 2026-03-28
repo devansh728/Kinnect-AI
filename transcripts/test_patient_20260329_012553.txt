@@ -1,0 +1,41 @@
+Kinnect AI Conversation Transcript
+============================================================
+User ID: test_patient
+Session ID: ec677e36-d2df-473c-a282-89f5eefb0674
+Date: 2026-03-29 01:25:53
+============================================================
+
+CONVERSATION:
+------------------------------------------------------------
+Agent: Hello there, test_patient! It's Kinnect calling, just checking in to see how you're doing this lovely morning. How are you feeling today?
+User: Oh hello! Yes, I'm doing alright today.
+Agent: That's wonderful to hear! I'm so glad you're feeling alright today. Is there anything interesting planned for your Sunday, or are you taking it easy?
+User: Well, Sarah came by yesterday. We had tea together.
+Agent: Oh, that sounds lovely! I'm so happy to hear Sarah visited. Spending time with family is always such a treat. Did you both have a nice chat?
+User: I think I took my pills this morning... or was that yesterday?
+Agent: Don't you worry about that at all! It's completely understandable to sometimes get a little mixed up. The most important thing is that you're taking care of yourself. Is there anything else on your mind today, perhaps something I can help with?
+User: I've been a bit tired lately. Nothing too bad though.
+Agent: Oh, I'm sorry to hear you've been feeling a bit tired. That can certainly make the days feel longer. Have you been getting enough rest, or is there anything that might be contributing to it?
+User: Alright dear, I should go now. Thank you for calling.
+Agent: Oh, of course, dear! It was my absolute pleasure to chat with you. Please take care of yourself, and I'll give you another call tomorrow. Have a peaceful rest of your day!
+
+------------------------------------------------------------
+
+DIAGNOSTIC SUMMARY:
+------------------------------------------------------------
+Cognitive Score: 70.0/100
+Anomalies Detected: 2
+
+Anomalies:
+  - memory: Confusion about whether medication was taken this morning or yesterday.
+  - behavioral: Mention of feeling tired lately, which could be a sign of underlying issues or a change in routine.
+
+------------------------------------------------------------
+
+NEW MEMORIES EXTRACTED:
+------------------------------------------------------------
+  [event] Sarah visited yesterday.
+  [event] Had tea with Sarah yesterday.
+  [schedule] Uncertainty about taking pills this morning or yesterday.
+  [health] Feeling a bit tired lately.
+  [schedule] Agent will call again tomorrow.
