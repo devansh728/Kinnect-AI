@@ -3,7 +3,7 @@ A proactive, multi-agent voice application designed to monitor cognitive health 
 
 
 
-# Kinnect AI - Project Breakdown & Task Definition
+
 
 ---
 
