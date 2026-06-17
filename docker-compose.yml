@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./chroma_db:/app/chroma_db
+      - ./transcripts:/app/transcripts
+      - ./recordings:/app/recordings
+      - ./alerts:/app/alerts
+    env_file:
+      - .env
+    restart: unless-stopped

@@ -1,0 +1,16 @@
+venv/
+.venv/
+__pycache__/
+.git/
+.gitignore
+.env
+chroma_db/
+transcripts/
+recordings/
+alerts/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+.vscode/
+.idea/

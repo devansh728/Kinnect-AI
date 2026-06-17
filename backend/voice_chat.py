@@ -15,6 +15,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from backend.audio_handler import AudioHandler
 from backend.database import query_memory, add_memory
 from backend.graph.prompts import CONVERSATIONAL_SYSTEM_PROMPT
+from backend.graph.workflow import create_postcall_workflow
+from backend.graph.state_utils import create_initial_state
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, AIMessage
 from config import settings
@@ -542,18 +544,36 @@ Keep it professional but human.
         # =====================================================================
         print("\n📞 Call ended.\n")
         print("=" * 70)
-        print("POST-CALL PROCESSING")
+        print("POST-CALL PROCESSING (via LangGraph)")
         print("=" * 70)
         
-        # Memory Extraction (REAL LLM)
-        new_entities = self.extract_memories()
+        # Build initial state with conversation results
+        state = create_initial_state(user_id=self.user_id)
+        state['messages'] = self.messages
+        state['transcript'] = self.transcript
+        state['session_id'] = self.session_id
+        state['retrieved_memories'] = memories
         
-        # Diagnostic Analysis (REAL LLM)
-        diagnostic_report = self.run_diagnostic(memories)
+        # Run post-call workflow
+        postcall_workflow = create_postcall_workflow()
+        final_state = state
+        for step_output in postcall_workflow.stream(state):
+            for node_name, node_output in step_output.items():
+                final_state = {**final_state, **node_output}
+                if node_name == "memory_extractor":
+                    print(f"✓ Memory extraction complete: {len(node_output.get('new_entities', []))} new facts")
+                elif node_name == "diagnostic_analyzer":
+                    print(f"✓ Diagnostic analysis complete: Score {node_output.get('cognitive_score', 'N/A')}/100")
+                elif node_name == "alert_handler":
+                    print(f"✓ Alert handler complete: Alert triggered: {node_output.get('needs_alert', False)}")
         
-        # Alert if needed
-        if diagnostic_report.get("needs_alert", False):
-            self.send_alert(diagnostic_report)
+        new_entities = final_state.get('new_entities', [])
+        diagnostic_report = {
+            "cognitive_score": final_state.get('cognitive_score', 'N/A'),
+            "needs_alert": final_state.get('needs_alert', False),
+            "summary": final_state.get('diagnostic_report', {}).get('summary', 'N/A') if isinstance(final_state.get('diagnostic_report'), dict) else str(final_state.get('diagnostic_report', 'N/A')),
+            "anomalies": final_state.get('anomalies_detected', [])
+        }
         
         # Save transcript
         self.save_transcript(diagnostic_report, new_entities)

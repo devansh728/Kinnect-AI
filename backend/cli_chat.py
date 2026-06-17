@@ -4,7 +4,7 @@ Interactive CLI chat interface for Kinnect AI.
 Allows real human conversation with the agent via terminal.
 """
 
-from backend.graph.workflow import create_kinnect_workflow
+from backend.graph.workflow import create_kinnect_workflow, create_postcall_workflow
 from backend.graph.state_utils import create_initial_state
 from backend.database import add_memory
 from datetime import datetime
@@ -17,6 +17,7 @@ class KinnectCLI:
     def __init__(self, user_id: str):
         self.user_id = user_id
         self.workflow = create_kinnect_workflow()
+        self.postcall_workflow = create_postcall_workflow()
         self.transcript_dir = "transcripts"
         self.ensure_transcript_dir()
     
@@ -162,7 +163,7 @@ class KinnectCLI:
         # Step 4: Run post-call agents (Memory Extractor, Diagnostic, Alert)
         # Continue the workflow from memory extraction
         final_state = state
-        for step_output in self.workflow.stream(state):
+        for step_output in self.postcall_workflow.stream(state):
             for node_name, node_output in step_output.items():
                 final_state = {**final_state, **node_output}
                 

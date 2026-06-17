@@ -21,8 +21,15 @@ def fetch_patient_memories(user_id: str, query_text: str, limit: int = 3) -> str
 
 @mcp.tool()
 def remove_patient_memory(memory_id: str) -> str:
+    """Deletes a patient memory by its ID."""
     delete_memory(memory_id)
     return f"Deleted memory: {memory_id}"
+
+@mcp.tool()
+def update_patient_memory(memory_id: str, new_content: str, new_metadata: dict) -> str:
+    """Updates the content and metadata of a specific patient memory in the database."""
+    update_memory(memory_id, new_content, new_metadata)
+    return f"Successfully updated memory: {memory_id}"
 
 if __name__ == "__main__":
     mcp.run(transport='stdio')

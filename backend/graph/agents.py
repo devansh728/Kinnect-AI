@@ -12,12 +12,14 @@ from backend.graph.prompts import (
     ALERT_MESSAGE_PROMPT
 )
 from backend.database import query_memory, add_memory
+from backend.graph.baseline import update_baseline, compare_to_baseline
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from config import settings
 from datetime import datetime
 import json
 import re
+import os
 
 # Initialize the Gemini model
 llm = ChatGoogleGenerativeAI(
@@ -387,14 +389,23 @@ def diagnostic_agent_node(state: KinnectState) -> dict:
         cognitive_score = float(diagnostic_report.get("cognitive_score", 75))
         anomalies = diagnostic_report.get("anomalies", [])
         
+        # Calculate drop relative to baseline
+        baseline_drop = compare_to_baseline(user_id, cognitive_score)
+        print(f"   Baseline Drop: {baseline_drop:.1f} points")
+        
         # Determine if alert is needed
         # Alert thresholds:
         # - Score below 60: Concerning
+        # - Drop from baseline greater than 20 points
         # - Any high-severity anomaly: Alert
         needs_alert = (
             cognitive_score < 60 or
+            baseline_drop > 20.0 or
             any(a.get("severity") == "high" for a in anomalies if isinstance(a, dict))
         )
+        
+        # Update baseline with the current score
+        update_baseline(user_id, cognitive_score)
         
         # Format anomalies for state
         anomalies_detected = [
@@ -495,9 +506,15 @@ def alert_agent_node(state: KinnectState) -> dict:
             print("...")
         print("-" * 40)
         
-        # In production, this would call the MCP Alert Server
-        # For now, we simulate sending
-        print(f"\n✅ Alert would be sent to caregiver for {user_id}")
+        # Save alert to file
+        os.makedirs("alerts", exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        alert_file = f"alerts/alert_{user_id}_{timestamp}.txt"
+        with open(alert_file, 'w', encoding='utf-8') as f:
+            f.write(alert_message)
+        print(f"💾 Alert saved to: {alert_file}")
+        
+        print(f"\n✅ Alert sent to caregiver for {user_id} (saved to file)")
         print(f"   Score: {cognitive_score}/100")
         print(f"   Anomalies: {len(state.get('anomalies_detected', []))}")
         

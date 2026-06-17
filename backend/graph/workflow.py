@@ -78,3 +78,40 @@ def create_kinnect_workflow():
     
     # Compile the graph (makes it executable)
     return workflow.compile()
+
+def create_postcall_workflow():
+    """
+    Builds the post-call LangGraph workflow.
+    
+    Flow:
+    1. Memory Extractor (saves new facts)
+    2. Diagnostic Analyzer (checks cognitive health)
+    3. [Conditional] Alert Handler (only if score is concerning)
+    """
+    workflow = StateGraph(KinnectState)
+    
+    print("Building post-call workflow graph...")
+    workflow.add_node("memory_extractor", memory_extraction_node)
+    workflow.add_node("diagnostic_analyzer", diagnostic_agent_node)
+    workflow.add_node("alert_handler", alert_agent_node)
+    
+    # Define the entry point for post-call flow
+    workflow.set_entry_point("memory_extractor")
+    
+    workflow.add_edge("memory_extractor", "diagnostic_analyzer")
+    
+    # CONDITIONAL ROUTING - Agentic decision point
+    workflow.add_conditional_edges(
+        "diagnostic_analyzer",
+        route_after_diagnostic,
+        {
+            "alert_handler": "alert_handler",
+            "END": END
+        }
+    )
+    
+    workflow.add_edge("alert_handler", END)
+    
+    print("✓ Post-call workflow graph constructed")
+    
+    return workflow.compile()
